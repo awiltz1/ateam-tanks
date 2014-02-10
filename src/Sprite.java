@@ -11,24 +11,30 @@
  * be a bullet
  */
 
+import java.awt.Graphics2D;
 import java.util.ArrayList;
+import java.awt.Color;
 
 public abstract class Sprite
 {
     ArrayList<Sprite> sprites;
     protected Vector3D p;
     protected Direction d;
+    protected Color color;
 
-    public Sprite ( ArrayList<Sprite> sprites, Vector3D p, Direction d )
+    public Sprite ( ArrayList<Sprite> sprites, Vector3D p, Direction d, Color c )
     {
         this.sprites = sprites;
         this.sprites.add ( this );
 
         this.p = new Vector3D ( p );
         this.d = new Direction ( d );
+	this.color = c;
     }
 
     public abstract int update ();
+
+    public abstract void paint(Graphics2D g);
 
     public Vector3D getPosition ()
     {

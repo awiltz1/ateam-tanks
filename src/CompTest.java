@@ -64,8 +64,29 @@ public class CompTest {
 		ArrayList<SimpleTank> CompTanks = new ArrayList<SimpleTank>();
 		
 		SpriteList sprites = new SpriteList();
+		ArrayList<Obstacle> sprites2 = new ArrayList<Obstacle>();
+		
 		SimpleTank t1 = new SimpleTank ( sprites, p1tanks, new Vector3D ( -100, -6, 10 ), new Direction ( 12), 2.5, 3.5, Color.red );
 		SimpleTank t2 = new SimpleTank ( sprites, CompTanks, new Vector3D ( 100, 6, 10 ), new Direction ( 300 ), 2.9, 5.5, Color.blue );
+		/*Obstacle o1 = new Obstacle ( sprites, new Vector3D ( 0, 0, 20 ), new Direction ( 0 ), 20 );
+		Obstacle o2 = new Obstacle ( sprites, new Vector3D ( 15, 60, 6 ), new Direction ( 0 ), 6 );
+		Obstacle o3 = new Obstacle ( sprites, new Vector3D ( 0, -80, 6 ), new Direction ( 0 ), 6 );
+		Obstacle o4 = new Obstacle ( sprites, new Vector3D ( 20, -100, 6 ), new Direction ( 0 ), 12 );
+		Obstacle o5 = new Obstacle ( sprites, new Vector3D ( -88, 60, 6 ), new Direction ( 0 ), 30 );
+		
+		sprites.add ( o1 );
+		sprites.add ( o2 );
+		sprites.add ( o3 );
+		sprites.add ( o4 );	
+		sprites.add (o5);
+		
+		sprites2.add ( o1 );
+		sprites2.add ( o2 );
+		sprites2.add ( o3 );
+		sprites2.add ( o4 );	
+		sprites2.add (o5);
+		*/
+
 
 		sprites.add ( t1 );
 		p1tanks.add ( t1 );
@@ -75,10 +96,11 @@ public class CompTest {
 
 		ArrayList<Player> players = new ArrayList<Player>();
 		players.add ( new HumanPlayer ( ui, player1Name, p1tanks, Color.red ) );
-		players.add ( new Comp ( new SpriteList(), CompTanks, p1tanks, Color.blue ) );
+		
+		players.add ( new Comp2 ( sprites2, CompTanks, p1tanks.get(0), Color.blue ) );
 
 		Game game = new Game ( players, sprites, ui, framesPerTurn, turnLimit, mapsize );
-
+		System.out.println("size = " + sprites2.size());
 		System.out.println ( "//  Game running now  //\n" );
 
 		int result = game.run ();

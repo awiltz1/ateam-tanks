@@ -81,6 +81,7 @@ public class AIPlayer extends Player
 		Vector3D newPos = null;
 		// If no obstacle in way
 		if (o == null) {
+			System.out.println("move o = null");
 			this.travel(v1, v2);
 			return v2;
 		}
@@ -99,19 +100,22 @@ public class AIPlayer extends Player
 	// Alter move around obstacle in the way
 	public Vector3D alterMov(Obstacle o, SimpleTank s, int x) {
 		double angle1 = this.getAngle(this.ownedTanks.get(0).getPosition(), o.getPosition());
+		System.out.println("alterMov");
 		double angle2 = this.getAngle(this.opponent.getPosition(), o.getPosition());
 		double diff = angle1 - angle2;
-		System.out.println(diff + " = " + angle1 + " - " + angle2);
 		System.out.println("Diff angle = " + diff);
 		double newAngle = 0;
 		if (diff < -180 || diff > 180) {
 			newAngle = angle1 + (diff/2);
+			System.out.println("newAngle1 = " + newAngle);
 		}
 		else {
 			newAngle = angle1 - (diff/2);
+			System.out.println("newAngle2 = " + newAngle);
 		}
 		if (newAngle < 0) {
 			newAngle = newAngle + 360;
+			System.out.println("newAngle3 = " + newAngle);
 		}
 		else if (newAngle > 360) {
 			newAngle = newAngle - 360;
@@ -185,7 +189,8 @@ public class AIPlayer extends Player
 		double orig = temp.getDirection().getTheta();
 		orig = orig % 360;
 		double diff = orig - angle;
-		System.out.println("Diff angle1 = " + diff + " = " + orig + " + " + angle);
+		diff = diff % 360;
+		System.out.println("Diff angle1 = " + diff + " = " + orig + " - " + angle);
 		int dir = -1;
 		if (diff > 180) {
 			dir = 1;
@@ -224,10 +229,10 @@ public class AIPlayer extends Player
 		while (b == false) {
 			Obstacle o = this.pathClear(oppPos, newPos, 0);
 			if (o == null) {
+				System.out.println("getPos o = null");
 				b = true;
 			}
 			else {
-				System.out.println("getPos alterMov");
 				newPos = this.alterMov(o, this.opponent, 0);
 			}
 		}

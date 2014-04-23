@@ -70,21 +70,21 @@ public class CompTest {
 		SimpleTank t2 = new SimpleTank ( sprites, CompTanks, new Vector3D ( 100, 6, 10 ), new Direction ( 360 ), 2.9, 5.5, Color.blue );
 		Obstacle o1 = new Obstacle ( sprites, new Vector3D ( 0, 0, 20 ), new Direction ( 0 ), 20 );
 		Obstacle o2 = new Obstacle ( sprites, new Vector3D ( 15, 60, 6 ), new Direction ( 0 ), 6 );
-		//Obstacle o3 = new Obstacle ( sprites, new Vector3D ( 0, -80, 6 ), new Direction ( 0 ), 6 );
+		Obstacle o3 = new Obstacle ( sprites, new Vector3D ( 0, -80, 6 ), new Direction ( 0 ), 6 );
 		Obstacle o4 = new Obstacle ( sprites, new Vector3D ( 20, -100, 6 ), new Direction ( 0 ), 12 );
-		//Obstacle o5 = new Obstacle ( sprites, new Vector3D ( -88, 60, 6 ), new Direction ( 0 ), 30 );
+		Obstacle o5 = new Obstacle ( sprites, new Vector3D ( -88, 60, 6 ), new Direction ( 0 ), 30 );
 		
 		sprites.add ( o1 );
 		sprites.add ( o2 );
-		//sprites.add ( o3 );
+		sprites.add ( o3 );
 		sprites.add ( o4 );	
-		//sprites.add (o5);
+		sprites.add (o5);
 		
 		sprites2.add ( o1 );
 		sprites2.add ( o2 );
-		//sprites2.add ( o3 );
+		sprites2.add ( o3 );
 		sprites2.add ( o4 );	
-		//sprites2.add (o5);
+		sprites2.add (o5);
 
 
 		sprites.add ( t1 );

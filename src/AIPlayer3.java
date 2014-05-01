@@ -25,55 +25,61 @@ import java.awt.Color;
 import java.util.ArrayList;
 import java.lang.*;
 
-public class AIPlayer extends Player
+public class AIPlayer3 extends Player
 {
 	private ArrayList<Obstacle> objects;
 	private SimpleTank opponent;
 	private OrderQueue orders;
 	private int frames;
-	public AIPlayer(ArrayList<Obstacle> objects, ArrayList<SimpleTank> tanks, SimpleTank enemy, Color c) {
+	public AIPlayer3(ArrayList<Obstacle> objects, ArrayList<SimpleTank> tanks, SimpleTank enemy, Color c) {
 		super ("Computer", tanks, c);
 		this.objects = objects;
 		this.opponent = enemy;
 		this.orders = new OrderQueue();
 		this.frames = 0;
 	}
-	// Gives orders to game
+	// Gives orders to tank
 	public void giveOrders(int frameLimit) {
 		this.orders = new OrderQueue();
 		this.frames = frameLimit;
-		Vector3D position = this.ownedTanks.get(0).getPosition();
-		boolean b = this.checkShoot(position, this.opponent.getPosition());
-		if (b == true) {
-			System.out.println("b == true");
-			this.shoot(position);
-			this.ownedTanks.get(0).giveOrders(this.orders);
-			return;
+		
+		Vector3D orig = this.ownedTanks.get(0).getPosition();
+		Vector3D opp = this.opponent.getPosition();
+		Obstacle o = this.pathClear(orig, opp, 1);
+		Vector3D newPos = null;
+		// If nothing is in the way shoot 
+		if (o == null) {
+			this.shoot(orig, opp);
 		}
-		this.printPos(position);
-		Vector3D movePos = this.getPos();
-		this.printPos(movePos);
-		Vector3D finPos = this.move(position, movePos);
-		this.printPos(finPos);
+		// Else find position to move to
+		else {
+			Vector3D ov = o.getPosition();
+			double d1 = this.getDist(orig, ov);
+			double d2 = this.getDist(opp, ov);
+			// If opponent is farther from obstacle than AI find position to attack
+			if (d2 > d1) {
+				newPos = this.getPos(o);
+			}
+			// Else find position to defend
+			else {
+				newPos = this.getPos(o);
+			}
+			// Get orders to move to new position
+			this.move(orig, newPos);
+			
+		}
+		// Once done moving attack with remaining frames
 		if (this.frames >= 3) {
-			this.shoot(finPos);
+			this.shoot(newPos, opp);
 		}
+		// Give tanks orders
 		this.ownedTanks.get(0).giveOrders(this.orders);
 		return;
 	}
-	// Check if no obstacles in way to fire
-	public boolean checkShoot(Vector3D v1, Vector3D v2) {
-		Obstacle o = this.pathClear(v1, v2, 1);
-		if (o == null) {
-			return true;
-		}
-		else {
-			return false;
-		}
-	}
+	
 	// Spray shoot at opponent
-	public void shoot(Vector3D v) {
-		double angle = this.getAngle(v, this.opponent.getPosition());
+	public void shoot(Vector3D v1, Vector3D v2) {
+		double angle = this.getAngle(v1, v2);
 		int t = 0;
 		int l = 1;
 		double handling = this.ownedTanks.get(0).getHandling();
@@ -93,98 +99,16 @@ public class AIPlayer extends Player
 		return;
 	}
 	//  Moves from v1 to v2
-	public Vector3D move(Vector3D v1, Vector3D v2) {
-		this.printPos(v2);
-		Obstacle o = this.pathClear(v1, v2, 1);
-		Vector3D newPos = null;
-		// If no obstacle in way
-		if (o == null) {
-			System.out.println("move o = null");
-			this.travel(v1, v2);
-			return v2;
-		}
-		// Alter move around obstacle in the way of path
-		else {
-			System.out.println("move alter move");
-			newPos = this.alterMov(o, this.ownedTanks.get(0), 1);
-			this.move(v1, newPos);
-		}
-		return newPos;
-	}
-	// Alter move around obstacle in the way
-	public Vector3D alterMov(Obstacle o, SimpleTank s, int x) {
-		double angle1 = this.getAngle(this.ownedTanks.get(0).getPosition(), o.getPosition());
-		System.out.println("alterMov");
-		double angle2 = this.getAngle(this.opponent.getPosition(), o.getPosition());
-		double diff = angle1 - angle2;
-		System.out.println("Diff angle = " + diff);
-		double newAngle = 0;
-		if (diff < -180 || diff > 180) {
-			newAngle = angle1 + (diff/2);
-			System.out.println("newAngle1 = " + newAngle);
-		}
-		else {
-			newAngle = angle1 - (diff/2);
-			System.out.println("newAngle2 = " + newAngle);
-		}
-		if (newAngle < 0) {
-			newAngle = newAngle + 360;
-			System.out.println("newAngle3 = " + newAngle);
-		}
-		else if (newAngle > 360) {
-			newAngle = newAngle - 360;
-		}
-		System.out.println("alterMov angle = " + newAngle);
-		boolean b = false;
-		int i = 2;
-		Vector3D temp = null;
-		while (b == false) {
-			System.out.println("i = " + i);
-			temp = new Vector3D(new Vector3D(o.hitboxRadius + i*s.hitboxRadius, new Direction(newAngle)), o.getPosition());
-			this.printPos(temp);
-			Obstacle o2 = this.pathClear(temp, s.getPosition(), x);
-			if (o2 == null) {
-				b = true;
-			}
-			i += 1;
-		}
-		System.out.println("New Pos");
-		this.printPos(temp);
-		return temp;
-	}
-	// Find if an obstacle is in the way
-	public Obstacle pathClear(Vector3D v1, Vector3D v2, int x) {
-		double speed = this.ownedTanks.get(0).getSpeed();
-		int frames = this.moveFrames(v1, v2, speed);
-		while (frames > 0) {
-			double angle = this.getAngle(v1, v2);
-			v1 = new Vector3D(v1, new Vector3D ( speed, new Direction(angle)));
-			Obstacle o = this.isLegit(v1, x);
-			if (o == null) {
-				frames -= 1;
-			}
-			else {
-				return o;
-			}
-		}
-		return null;
-	}
-	// Number of move frames 
-	public int moveFrames(Vector3D v1, Vector3D v2, double speed) {
-		double dist = this.getDist(v1, v2);
-		double frames = dist/speed;
-		return (int) frames;
-	}
-	// Moves tank from v1 to v2
-	public void travel(Vector3D v1, Vector3D v2) {
+	public void move(Vector3D v1, Vector3D v2) {
 		double angle = this.getAngle(v1, v2);
-		System.out.println("travel angle = " + angle);
+		// Turn to face v2 from v1
 		this.turn(angle);
+		// Make MoveOrder to move to v2 from v1
 		if (this.frames > 0) {
 			double speed = this.ownedTanks.get(0).getSpeed();
 			double dist = this.getDist(v1, v2);
 			double fr2 =  dist/speed;
-			
+					
 			int fr = (int) fr2;
 			if (this.frames <  fr) {
 				fr = this.frames;
@@ -197,67 +121,135 @@ public class AIPlayer extends Player
 			return;
 		}
 	}
+	// Find if an obstacle is in the way
+	public Obstacle pathClear(Vector3D v1, Vector3D v2, int x) {
+		double speed = this.ownedTanks.get(0).getSpeed();
+		// Get number of frames to reach v2 from v1
+		int frames = this.moveFrames(v1, v2, speed);
+		Obstacle o = null;
+		while (frames > 0) {
+			double angle = this.getAngle(v1, v2);
+			v1 = new Vector3D(v1, new Vector3D ( speed, new Direction(angle)));
+			// If x == 0 check if tank will collide
+			if (x == 0) {
+				o = this.isLegit(v1);
+			}
+			// Else check if bullets will collide
+			else {
+				o = this.isLegit2(v1);
+			}
+			if (o == null) {
+				frames -= 1;
+			}
+			else {
+				return o;
+			}
+		}
+		// If no collision through path then return null
+		return null;
+	}
+	// Number of move frames 
+	public int moveFrames(Vector3D v1, Vector3D v2, double speed) {
+		double dist = this.getDist(v1, v2);
+		double frames = dist/speed;
+		return (int) frames;
+	}
 	// Turn order to face direction for tank to move
 	public void turn(double angle) {
 		SimpleTank temp = this.ownedTanks.get(0);
 		double orig = temp.getDirection().getTheta();
+		// Get difference between original angle and tank angle
 		double diff = orig - angle;
 		diff = diff % 360;
-		System.out.println("Diff angle1 = " + diff + " = " + orig + " - " + angle);
 		int dir = -1;
+		// If diff > 180 turn opposite direction
 		if (diff > 180) {
 			dir = 1;
 			diff = 360-diff;
 		}
 		else {
+			// If diff < 0 make diff the opposite
 			if (diff < 0) {
 				dir = 1;
 				diff = -diff;
+				// if opposite > 180 turn opposite direction
 				if (diff > 180) {
 					dir = -1;
 					diff = 360-diff;
 				}
 			}
 		}
-		System.out.println("Diff angle2 = " + diff);
+		// Get number of turn frames
 		double handling = this.ownedTanks.get(0).getHandling();
 		double fr2 = diff/handling;
 		int fr = (int) fr2;
-		System.out.println("turn frames = " + fr);
+		// If frames < turn frames, turn rest of frames
 		if (this.frames <  fr) {
 			fr = this.frames;
 		}
 		this.frames -= fr;
+		// Make TurnOrder
 		this.orders.add(new TurnOrder(fr, dir));
 	}
-	// Get position to move to
-	public Vector3D getPos() {
+	// Get attack position to move
+	public Vector3D getPos(Obstacle o) {
 		Vector3D oppPos = this.opponent.getPosition();
-		double angle = this.getAngle(this.ownedTanks.get(0).getPosition(), oppPos);
+		Vector3D pos = this.ownedTanks.get(0).getPosition();
+		// Get diff between angles from object
+		double angle1 = this.getAngle(pos, o.getPosition());
+		double angle2 = this.getAngle(oppPos, o.getPosition());
+		double diff = angle1 - angle2;	
+		double newAngle = 0;
+		// Get middle between both angles
+		if (diff < -180 || diff > 180) {
+			newAngle = angle1 + (diff/2);
+		}
+		else {
+			newAngle = angle1 - (diff/2);
+		}
+		if (newAngle < 0) {
+			newAngle = newAngle + 360;
+		}
+		else if (newAngle > 360) {
+			newAngle = newAngle - 360;
+		}
 		boolean b = false;
-		double dist =100;
-		
-		Vector3D m = new Vector3D(dist, new Direction(angle-180));
-		Vector3D newPos = new Vector3D(m ,oppPos);
+		int i = 2;
+		Vector3D temp = null;
+		// find position that is clear of obstacles
 		while (b == false) {
-			Obstacle o = this.pathClear(oppPos, newPos, 0);
-			if (o == null) {
-				System.out.println("getPos o = null");
+			// Get new position
+			temp = new Vector3D(new Vector3D(o.hitboxRadius + i*this.ownedTanks.get(0).hitboxRadius, new Direction(newAngle)), o.getPosition());
+			// Check if path is clear from tank to newPos
+			Obstacle o2 = this.pathClear(temp, this.ownedTanks.get(0).getPosition(), 0);
+			// If nno obstacle in way b == true
+			if (o2 == null) {
 				b = true;
 			}
-			else {
-				newPos = this.alterMov(o, this.opponent, 0);
-			}
+			i += 1;
 		}
-		return newPos;
+		return temp;
+	}
+	// Get defense position to move
+	public Vector3D getPos2(Obstacle o) {
+		return new Vector3D (0, 0, 0);
 	}
 	// Check if Vector3D collides with an obstacle
-	public Obstacle isLegit(Vector3D v, int x) {
+	public Obstacle isLegit(Vector3D v) {
+		SimpleTank plTank = this.ownedTanks.get(0);
+		double hitBox = plTank.hitboxRadius;
+		for (Obstacle o : this.objects) {
+			double dist = this.getDist(v, o.getPosition());
+			if (dist <= hitBox + o.hitboxRadius) {
+				return o;
+			}
+		}
+		return null;
+	}
+	// Check if bullet will collide with an obstacle
+	public Obstacle isLegit2(Vector3D v) {
 		SimpleTank plTank = this.ownedTanks.get(0);
 		double hitBox = 1;
-		if (x == 1) {
-			hitBox = plTank.hitboxRadius;
-		}
 		for (Obstacle o : this.objects) {
 			double dist = this.getDist(v, o.getPosition());
 			if (dist <= hitBox + o.hitboxRadius) {

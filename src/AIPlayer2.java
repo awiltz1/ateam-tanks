@@ -25,18 +25,20 @@ import java.awt.Color;
 import java.util.ArrayList;
 import java.lang.*;
 
-public class AIPlayer extends Player
+public class AIPlayer2 extends Player
 {
 	private ArrayList<Obstacle> objects;
 	private SimpleTank opponent;
 	private OrderQueue orders;
 	private int frames;
-	public AIPlayer(ArrayList<Obstacle> objects, ArrayList<SimpleTank> tanks, SimpleTank enemy, Color c) {
+	private Vector3D pos;
+	public AIPlayer2(ArrayList<Obstacle> objects, ArrayList<SimpleTank> tanks, SimpleTank enemy, Color c) {
 		super ("Computer", tanks, c);
 		this.objects = objects;
 		this.opponent = enemy;
 		this.orders = new OrderQueue();
 		this.frames = 0;
+		this.pos = null;
 	}
 	// Gives orders to game
 	public void giveOrders(int frameLimit) {
@@ -45,18 +47,18 @@ public class AIPlayer extends Player
 		Vector3D position = this.ownedTanks.get(0).getPosition();
 		boolean b = this.checkShoot(position, this.opponent.getPosition());
 		if (b == true) {
-			System.out.println("b == true");
 			this.shoot(position);
 			this.ownedTanks.get(0).giveOrders(this.orders);
 			return;
 		}
-		this.printPos(position);
-		Vector3D movePos = this.getPos();
-		this.printPos(movePos);
-		Vector3D finPos = this.move(position, movePos);
-		this.printPos(finPos);
-		if (this.frames >= 3) {
-			this.shoot(finPos);
+		else {
+			this.printPos(position);
+			Vector3D movePos = this.getPos();
+			this.printPos(movePos);
+			Vector3D finPos = this.move(position, movePos);
+			if (this.frames >= 3) {
+				this.shoot(finPos);
+			}
 		}
 		this.ownedTanks.get(0).giveOrders(this.orders);
 		return;
@@ -99,22 +101,22 @@ public class AIPlayer extends Player
 		Vector3D newPos = null;
 		// If no obstacle in way
 		if (o == null) {
-			System.out.println("move o = null");
 			this.travel(v1, v2);
 			return v2;
 		}
 		// Alter move around obstacle in the way of path
 		else {
-			System.out.println("move alter move");
-			newPos = this.alterMov(o, this.ownedTanks.get(0), 1);
-			this.move(v1, newPos);
+			
+			int t = this.alterMov(o, this.ownedTanks.get(0), 1);
+			this.move(v1, this.pos);
 		}
 		return newPos;
 	}
 	// Alter move around obstacle in the way
-	public Vector3D alterMov(Obstacle o, SimpleTank s, int x) {
+	public int alterMov(Obstacle o, SimpleTank s, int x) {
+		double d1 = this.getDist(o.getPosition(), s.getPosition());
+		double d2 = this.getDist(o.getPosition(), this.ownedTanks.get(0).getPosition());
 		double angle1 = this.getAngle(this.ownedTanks.get(0).getPosition(), o.getPosition());
-		System.out.println("alterMov");
 		double angle2 = this.getAngle(this.opponent.getPosition(), o.getPosition());
 		double diff = angle1 - angle2;
 		System.out.println("Diff angle = " + diff);
@@ -138,6 +140,7 @@ public class AIPlayer extends Player
 		boolean b = false;
 		int i = 2;
 		Vector3D temp = null;
+		Vector3D temp2 = null;
 		while (b == false) {
 			System.out.println("i = " + i);
 			temp = new Vector3D(new Vector3D(o.hitboxRadius + i*s.hitboxRadius, new Direction(newAngle)), o.getPosition());
@@ -148,9 +151,30 @@ public class AIPlayer extends Player
 			}
 			i += 1;
 		}
-		System.out.println("New Pos");
-		this.printPos(temp);
-		return temp;
+		if (d2 > d1 && x == 0) {
+			
+			double newAngle2 = angle1 + 180;
+			newAngle2 = newAngle % 360;
+			System.out.println("newAngle2 = " + newAngle2);
+			b = false;
+			i = 2;
+			while (b == false) {
+				temp2 = new Vector3D(new Vector3D(o.hitboxRadius, new Direction(newAngle2)), o.getPosition());
+				Obstacle o2 = this.pathClear(temp2, temp, x);
+				if (o2 == null) {
+					b = true;
+				}
+				System.out.println("temp2");
+				i += 1;
+			}
+			this.pos = temp2;
+			return 0;
+		}
+		else {
+			System.out.println("temp");
+			this.pos = temp;
+			return 1;
+		}
 	}
 	// Find if an obstacle is in the way
 	public Obstacle pathClear(Vector3D v1, Vector3D v2, int x) {
@@ -246,10 +270,14 @@ public class AIPlayer extends Player
 				b = true;
 			}
 			else {
-				newPos = this.alterMov(o, this.opponent, 0);
+				System.out.println("Repeat");
+				int t = this.alterMov(o, this.opponent, 0);
+				if (t == 0) {
+					return this.pos;
+				}
 			}
 		}
-		return newPos;
+		return this.pos;
 	}
 	// Check if Vector3D collides with an obstacle
 	public Obstacle isLegit(Vector3D v, int x) {

@@ -17,36 +17,25 @@
  *    along with ateam-tanks.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package gameinterface;
+package test;
 
 import game.*;
 import network.*;
 import event.*;
+import gameinterface.*;
 
-import java.util.*;
+import java.io.Console;
 
-public class RealWindow extends GWindow
+public class ServerStandaloneTest extends Thread
 {
 
-    DemoPanel demoPanel;
-
-    public RealWindow(GameClient c, DemoPanel d)
+    public static void main(String[] args)
     {
-        super(c);
-        c.setWin(this);
-        this.demoPanel = d;
-        demoPanel.initializeDisplay(400);
-        this.start();
-    }
-
-    public ArrayList<OrderQueue> makeOrders(SpriteList sprites, int ID, String playerName)
-    {
-        return demoPanel.askForOrders(sprites, ID, playerName);
-    }
-
-    public void runAndDisplay(SpriteList sprites, int ID)
-    {
-        sprites.runTurn(demoPanel);
+        System.out.println("----- Server Start -----");
+        GameServer server = new GameServer(3, 8887);
+        System.console().readLine("Press enter to kill server");
+        server.push(new event.server.ShutdownEvent("killin you"));
+        System.out.println("----- Tests complete -----");
     }
 
 }

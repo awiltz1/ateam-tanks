@@ -96,7 +96,7 @@ public class GameRoom extends Room
             System.out.println("REPLACING HUMAN WITH AI");
             int id = this.players.get(user.getPlayerName()).ID();
             this.players.remove(user.getPlayerName());
-            this.players.put(user.getPlayerName(), new Player(id, user.getPlayerName()));
+            this.players.put(user.getPlayerName(), new AIPlayer(id, user.getPlayerName()));
             toUsers(new event.user.FwdClientEvent(new event.client.ChatEvent("Room", "room", user.getPlayerName() + " has quit; replaced by AI.")));
         }
     }

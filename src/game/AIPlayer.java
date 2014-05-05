@@ -1,3 +1,4 @@
+
 /**
  * Copyright 2014 A-Team Games
  *
@@ -21,21 +22,38 @@ package game;
 
 import java.util.ArrayList;
 
-public class Player
+public class AIPlayer extends Player
 {
 
-    protected int id;
-    protected String name;
-
-    public Player(int id, String n)
+    public AIPlayer(int id, String n)
     {
-        this.id = id;
-        this.name = n;
+        super(id, n);
     }
 
     public ArrayList<OrderQueue> getOrders(SpriteList sprites)
     {
-        return new ArrayList<OrderQueue>();
+        System.out.println("running AI " + this.getName());
+        ArrayList<Obstacle> objects = new ArrayList<Obstacle>();
+        ArrayList<SimpleTank> ownedTanks = new ArrayList<SimpleTank>();
+        SimpleTank enemy = new SimpleTank(new Vector3D(0,0,0), new Direction(), 0, 0);
+        for(Sprite s : sprites.getSprites())
+        {
+            if(s.playerID == -5)
+            {
+                objects.add((Obstacle) s);
+            }
+            else if(s.playerID == 0) {}
+            else if(s.playerID == this.ID())
+            {
+                ownedTanks.add((SimpleTank) s);
+            }
+            else
+            {
+                enemy = (SimpleTank) s;
+            }
+        }
+        AICore ai = new AICore(objects, ownedTanks, enemy);
+        return ai.giveOrders(sprites.getFramesPerTurn());
     }
 
     public boolean areOrdersSet()

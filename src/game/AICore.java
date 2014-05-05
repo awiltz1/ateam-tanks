@@ -21,26 +21,28 @@
  * A player class for a simple AI
  */
 
+package game;
+
 import java.awt.Color;
 import java.util.ArrayList;
 import java.lang.*;
 
-public class AIPlayer3 extends Player
+public class AICore extends OldPlayer
 {
 	private ArrayList<Obstacle> objects;
 	private SimpleTank opponent;
 	private OrderQueue orders;
 	private int frames;
-	public AIPlayer3(ArrayList<Obstacle> objects, ArrayList<SimpleTank> tanks, SimpleTank enemy, Color c) {
-		super ("Computer", tanks, c);
+	public AICore(ArrayList<Obstacle> objects, ArrayList<SimpleTank> tanks, SimpleTank enemy) {
+		super ("Computer", tanks, Color.white);
 		this.objects = objects;
 		this.opponent = enemy;
 		this.orders = new OrderQueue();
 		this.frames = 0;
 	}
 	// Gives orders to tank
-	public void giveOrders(int frameLimit) {
-		this.orders = new OrderQueue();
+	public ArrayList<OrderQueue> giveOrders(int frameLimit) {
+		this.orders = new OrderQueue(frameLimit, this.ownedTanks.get(0).uid());
 		this.frames = frameLimit;
 		
 		Vector3D orig = this.ownedTanks.get(0).getPosition();
@@ -72,9 +74,10 @@ public class AIPlayer3 extends Player
 		if (this.frames >= 3) {
 			this.shoot(newPos, opp);
 		}
-		// Give tanks orders
-		this.ownedTanks.get(0).giveOrders(this.orders);
-		return;
+		// return orders
+                ArrayList<OrderQueue> output = new ArrayList<OrderQueue>();
+                output.add(this.orders.clone());
+		return output;
 	}
 	
 	// Spray shoot at opponent
@@ -287,6 +290,3 @@ public class AIPlayer3 extends Player
 		System.out.println("Pos = (" + v.getX() + "," + v.getY() + ")");
 	}
 }
-	
-	
-	

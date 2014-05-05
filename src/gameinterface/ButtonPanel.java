@@ -58,7 +58,7 @@ public class ButtonPanel extends JPanel
         this.add(this.connect);
         this.connect.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
-                String hostname = askForString("Enter Server Hostname:");
+                String hostname = askForString("Enter Server Hostname:", "localhost");
                 win.toClient(new event.client.JoinServerEvent(hostname));
             }
         } );
@@ -86,7 +86,7 @@ public class ButtonPanel extends JPanel
         this.add(this.create);
         this.create.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
-                String gamename = askForString("Enter Game Name:");
+                String gamename = askForString("Enter Game Name:", "");
                 win.toClient(new event.client.FwdUserEvent(new event.user.CreateRoomEvent(gamename, SpriteListGen.mkList())));
             }
         } );
@@ -96,7 +96,7 @@ public class ButtonPanel extends JPanel
         this.add(this.join);
         this.join.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
-                String gamename = askForString("Enter Game Name:");
+                String gamename = askForString("Enter Game Name:", "");
                 win.toClient(new event.client.FwdUserEvent(new event.user.JoinRoomEvent(gamename)));
             }
         } );
@@ -113,7 +113,7 @@ public class ButtonPanel extends JPanel
         this.setVisible(true);
     }
 
-    final String askForString(final String prompt)
+    final String askForString(final String prompt, final String suggestion)
     {
         Object[] possibilities = null;
         String s = (String)JOptionPane.showInputDialog(this.frame, prompt, 
@@ -121,11 +121,11 @@ public class ButtonPanel extends JPanel
                             JOptionPane.PLAIN_MESSAGE,
                             null,
                             possibilities,
-                            "typety type");
+                            suggestion);
         if ((s != null) && (s.length() > 0))
         {
             return s;
         }
-        else return askForString("No seriously, " + prompt);
+        else return askForString("No seriously, " + prompt, suggestion);
     }
 }

@@ -17,25 +17,25 @@
  *    along with ateam-tanks.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package test;
+package event.server;
 
-import game.*;
 import network.*;
-import event.*;
+import game.*;
 import gameinterface.*;
 
-import java.io.Console;
-
-public class ServerStandaloneTest extends Thread
+public class RoomClosedEvent implements event.Event<GameServer>
 {
 
-    public static void main(String[] args)
+    private String name;
+
+    public RoomClosedEvent(String n)
     {
-        System.out.println("----- Server Start -----");
-        GameServer server = new GameServer(50, 8887);
-        System.console().readLine("Press enter to kill server");
-        server.push(new event.server.ShutdownEvent("killin you"));
-        System.out.println("----- Tests complete -----");
+        this.name = n;
+    }
+
+    public void handle(GameServer server)
+    {
+        server.removeRoom(this.name);
     }
 
 }

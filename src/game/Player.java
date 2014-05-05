@@ -33,7 +33,7 @@ public class Player
         this.name = n;
     }
 
-    public ArrayList<OrderQueue> getOrders()
+    public ArrayList<OrderQueue> getOrders(SpriteList sprites)
     {
         ArrayList<OrderQueue> os = new ArrayList<OrderQueue>();
         OrderQueue o = new OrderQueue();

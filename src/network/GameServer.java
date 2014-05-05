@@ -125,6 +125,17 @@ public class GameServer extends ConcreteDropBox<GameServer>
         }
     }
 
+    public boolean removeRoom(String name)
+    {
+        if(this.rooms.containsKey(name))
+        {
+            this.rooms.remove(name);
+            System.out.println("Game \"" + name + "\" closed");
+        }
+        System.out.println("remove room");
+        return true;
+    }
+
     public boolean addUser(User u)
     {
         if(this.users.containsKey(u.getPlayerName()))

@@ -31,10 +31,11 @@ public class GetOrdersEvent implements event.Event<GWindow>
     private int ID;
     private String playerName;
 
-    public GetOrdersEvent(SpriteList ss, int ID)
+    public GetOrdersEvent(SpriteList ss, int ID, String pn)
     {
         this.list = ss;
         this.ID = ID;
+        this.playerName = pn;
     }
 
     public void handle(GWindow win)

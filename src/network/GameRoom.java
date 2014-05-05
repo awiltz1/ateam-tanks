@@ -86,6 +86,8 @@ public class GameRoom extends Room
         {
             System.out.println("CLOSINGGAMEBECAUSECREATORLEFT");
             toUsers(new event.user.PartRoomEvent("Creator left, game closed"));
+            toServer(new event.server.RoomClosedEvent(this.name));
+            try { sleep(100); } catch (InterruptedException e) {}
             this.killingYou();
         }
         else if(this.isGameRunning)
@@ -105,6 +107,11 @@ public class GameRoom extends Room
         {
             this.users.get(un).push(ev);
         }
+    }
+
+    public void toServer(Event<GameServer> ev)
+    {
+        this.server.push(ev);
     }
 
     public void announce(String message)

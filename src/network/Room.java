@@ -31,7 +31,7 @@ public class Room extends ConcreteDropBox<Room>
     protected String name;
     protected Map<String,User> users;
     protected Map<String,Player> players;
-    private DropBox<GameServer> server;
+    protected DropBox<GameServer> server;
 
     public Room(GameServer s, String name)
     {
@@ -45,6 +45,8 @@ public class Room extends ConcreteDropBox<Room>
     public void removeUser(User user) {}
 
     public void toUsers(Event<User> ev) {}
+
+    public void toServer(Event<GameServer> ev) {}
 
     public void announce(String s) {}
 

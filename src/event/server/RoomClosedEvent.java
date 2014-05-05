@@ -17,41 +17,25 @@
  *    along with ateam-tanks.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package gameinterface;
+package event.server;
 
-import game.*;
 import network.*;
-import event.*;
+import game.*;
+import gameinterface.*;
 
-import java.util.*;
-
-public class RealWindow extends GWindow
+public class RoomClosedEvent implements event.Event<GameServer>
 {
 
-    DemoPanel demoPanel;
+    private String name;
 
-    public RealWindow(GameClient c, DemoPanel d)
+    public RoomClosedEvent(String n)
     {
-        super(c);
-        c.setWin(this);
-        this.demoPanel = d;
-        demoPanel.initializeDisplay(400);
-        this.start();
+        this.name = n;
     }
 
-    public ArrayList<OrderQueue> makeOrders(SpriteList sprites, int ID, String playerName)
+    public void handle(GameServer server)
     {
-        return demoPanel.askForOrders(sprites, ID, playerName);
-    }
-
-    public DemoPanel getDemoPanel()
-    {
-        return this.demoPanel;
-    }
-
-    public void runAndDisplay(SpriteList sprites, int ID)
-    {
-        sprites.runTurn(demoPanel);
+        server.removeRoom(this.name);
     }
 
 }

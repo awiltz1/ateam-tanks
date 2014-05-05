@@ -32,7 +32,7 @@ public class ServerStandaloneTest extends Thread
     public static void main(String[] args)
     {
         System.out.println("----- Server Start -----");
-        GameServer server = new GameServer(3, 8887);
+        GameServer server = new GameServer(50, 8887);
         System.console().readLine("Press enter to kill server");
         server.push(new event.server.ShutdownEvent("killin you"));
         System.out.println("----- Tests complete -----");

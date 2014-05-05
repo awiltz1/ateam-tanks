@@ -25,33 +25,27 @@ import event.*;
 
 import java.util.*;
 
-public class RealWindow extends GWindow
+public class CWindow extends ConcreteDropBox<CWindow>
 {
 
-    DemoPanel demoPanel;
+    DropBox<GameClient> client;
+    ClientWindow win;
 
-    public RealWindow(GameClient c, DemoPanel d)
+    public CWindow(DropBox<GameClient> c, ClientWindow win)
     {
-        super(c);
-        c.setWin(this);
-        this.demoPanel = d;
-        demoPanel.initializeDisplay(400);
+        this.client = c;
+        this.win = win;
         this.start();
     }
 
-    public ArrayList<OrderQueue> makeOrders(SpriteList sprites, int ID, String playerName)
+    public void toClient(Event<GameClient> ev)
     {
-        return demoPanel.askForOrders(sprites, ID, playerName);
+        this.client.push(ev);
     }
 
-    public DemoPanel getDemoPanel()
+    public ClientWindow getWin()
     {
-        return this.demoPanel;
-    }
-
-    public void runAndDisplay(SpriteList sprites, int ID)
-    {
-        sprites.runTurn(demoPanel);
+        return this.win;
     }
 
 }

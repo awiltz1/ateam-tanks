@@ -34,7 +34,7 @@ public class RemotePlayer extends Player
         this.orders = new ArrayList<OrderQueue>();
     }
 
-    public ArrayList<OrderQueue> getOrders()
+    public ArrayList<OrderQueue> getOrders(SpriteList sprites)
     {
         return this.orders;
     }

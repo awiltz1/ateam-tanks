@@ -235,7 +235,7 @@ public class GameRoom extends Room
         }
         for (String pname : this.players.keySet())
         {
-            for (OrderQueue q : this.players.get(pname).getOrders())
+            for (OrderQueue q : this.players.get(pname).getOrders(this.sprites.clone()))
             {
                 for (Sprite sprite : this.sprites.getSprites())
                 {

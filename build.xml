@@ -30,6 +30,7 @@
     </target>
 
     <target name="test" depends="compile" description="run test procedure" >
+        <java classpath="${build}" classname="test.HitboxUnitTest" />
         <java classpath="${build}" classname="test.ClientServerTest" />
         <java classpath="${build}" classname="test.GameRoomTest" />
     </target>

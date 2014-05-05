@@ -1,0 +1,38 @@
+/*
+ * Each order will have a method that paints the appropriate thing and returns
+ * a change. Move orders will paint a line from start to end and return their
+ * magnitude.
+ * Turns will paint some circly thing and return their turn distance.
+ * Shoots will draw a line in the direction of the shot and return nothing.
+ *
+ * The orderqueue uses these returns to keep a model of the position and direction
+ * of the tank which it passes to each order in turn..
+ *
+ * actually, the orderqueue makes a model of the tank and passes (by reference) it to the first order.
+ * the order uses it to paint in the right place and then modifies it accordingly. it is then
+ * passed on to the next order which does the same thing. after all the orders have been passed through,
+ * the orderqueue uses the model it has made to print a rectangle in the approximate end location of the
+ * tank.
+ *
+ * As the user edits an order, this rectangle moves accordingly until they confirm it, at which point
+ * the order is added and the rectangle is painted (hopefully to the same spot it was just in). This is
+ * a better solution than constantly adding and removing a new order of slightly different length with 
+ * each press of the arrow keys.
+ *
+ * The user should be able to delete every order they have made ( in sort of a backing-up fashion ) by hitting
+ * the escape key the correct number of times. With each press of the key, the latest order is kicked off the end
+ * of the queue (it's not implemented as a strict queue) and the screen updates to show the order path without it.
+ *
+ * (These removed orders should also be put in a stack that can be restored one at a time with a different key. This
+ *  stack would be deleted as soon as a new order is added in place of one in the deleted stack. This is basically the
+ *  functionality of the "undo, redo" buttons in an editor)
+ *
+ * There should be a visual queue being built on the side of the screen as orders are assigned. It will be a vertical bar
+ * representing the total number of frames availible for the turn, and it will fill up as orders are assigned. Each order type
+ * will have a color, and the bar will fill up with little blocks of those colors.
+ *
+ * At the bottom of the screen will be a number of rectangles of the appropriate colors containing the name of each type of order
+ * (and indicating what key to press to select it). These rectangles will highlight when their order is selected. To deselect an
+ * order (and remove whatever "progress" has been made in defining that order), the user hits escape. Escape is the general "go back"
+ * key.
+ */

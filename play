@@ -1,0 +1,5 @@
+#!/bin/sh
+
+# Play the game
+
+java -cp build test.ClientWindowTest

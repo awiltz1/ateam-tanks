@@ -19,42 +19,38 @@
 
 package game;
 
+import java.awt.Color;
 import java.util.ArrayList;
 
-public class Player
+//yanked straight from demo 1
+//good times
+public abstract class OldPlayer
 {
+    protected String playerName;
+    private Color color;
 
-    protected int id;
-    protected String name;
+    protected ArrayList<SimpleTank> ownedTanks;
 
-    public Player(int id, String n)
+    public OldPlayer ( String name, ArrayList<SimpleTank> tanks , Color c)
     {
-        this.id = id;
-        this.name = n;
+        playerName = name;
+        ownedTanks = tanks;
+	color = c;
     }
 
-    public ArrayList<OrderQueue> getOrders(SpriteList sprites)
+    public abstract ArrayList<OrderQueue> giveOrders(int frameLimit);
+
+    public boolean stillAlive ()
     {
-        return new ArrayList<OrderQueue>();
+        return ( ownedTanks.size() != 0 );
     }
 
-    public boolean areOrdersSet()
+    public String getName ()
     {
-        return true;
+        return playerName;
     }
-
-    public void setOrders(ArrayList<OrderQueue> os) {}
-
-    public void clearOrders() {}
-
-    public String getName()
+    public Color getColor ()
     {
-        return this.name;
+        return color;
     }
-
-    public int ID()
-    {
-        return this.id;
-    }
-
 }

@@ -38,6 +38,7 @@ public class Obstacle extends Sprite implements Serializable
     public Obstacle(Vector3D position, Direction direction, double hitboxRadius)
     {
         super (position, direction, hitboxRadius );
+        this.playerID = -5;
     }
 
     public Obstacle clone()

@@ -1,0 +1,5 @@
+#!/bin/sh
+
+# Start a server instance
+
+java -cp build test.ServerStandaloneTest

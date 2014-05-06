@@ -1,4 +1,4 @@
-<project name="ateam-tanks" default="dist" basedir=".">
+<project name="ateam-tanks" default="all" basedir=".">
         <description>
             simple build file
         </description>
@@ -13,7 +13,7 @@
         <!-- Create the build directory structure used by compile -->
     </target>
 
-    <target name="compile" depends="init,clean"
+    <target name="compile" depends="init"
             description="compile the source " >
         <!-- Compile the java code from ${src} into ${build} -->
         <mkdir dir="${build}"/>
@@ -41,4 +41,9 @@
         <delete dir="${build}"/>
         <delete dir="${dist}"/>
     </target>
+
+    <target name="all" depends="clean,compile,test"
+            description="compile fresh code and test" >
+    </target>
+
 </project>

@@ -35,7 +35,7 @@ public class AIPlayer extends Player
         System.out.println("running AI " + this.getName());
         ArrayList<Obstacle> objects = new ArrayList<Obstacle>();
         ArrayList<SimpleTank> ownedTanks = new ArrayList<SimpleTank>();
-        SimpleTank enemy = new SimpleTank(new Vector3D(0,0,0), new Direction(), 0, 0);
+        SimpleTank enemy = null;
         for(Sprite s : sprites.getSprites())
         {
             if(s.playerID == -5)
@@ -52,8 +52,15 @@ public class AIPlayer extends Player
                 enemy = (SimpleTank) s;
             }
         }
-        AICore ai = new AICore(objects, ownedTanks, enemy);
-        return ai.giveOrders(sprites.getFramesPerTurn());
+        if(enemy != null && ownedTanks.size() > 0)
+        {
+            AICore ai = new AICore(objects, ownedTanks, enemy);
+            return ai.giveOrders(sprites.getFramesPerTurn());
+        }
+        else
+        {
+            return new ArrayList<OrderQueue>();
+        }
     }
 
     public boolean areOrdersSet()

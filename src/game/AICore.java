@@ -46,7 +46,9 @@ public class AICore extends OldPlayer
 		this.frames = frameLimit;
 		
 		Vector3D orig = this.ownedTanks.get(0).getPosition();
+                System.out.println(orig.toString());
 		Vector3D opp = this.opponent.getPosition();
+                System.out.println(opp.toString());
 		Obstacle o = this.pathClear(orig, opp, 1);
 		Vector3D newPos = null;
 		// If nothing is in the way shoot 

@@ -147,7 +147,7 @@ public class GameRoom extends Room
         {
             playerCount ++;
             String botName = "bot " + playerCount;
-            this.players.put(botName, new Player(playerCount, botName));
+            this.players.put(botName, new AIPlayer(playerCount, botName));
         }
         for (String uname : this.users.keySet())
         {

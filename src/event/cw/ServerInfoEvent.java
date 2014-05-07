@@ -17,30 +17,25 @@
  *    along with ateam-tanks.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package event.client;
+package event.cw;
 
 import network.*;
 import game.*;
 import gameinterface.*;
 
-public class ChatEvent implements event.Event<GameClient>
+public class ServerInfoEvent implements event.Event<CWindow>
 {
 
-    String sender;
-    String status;
-    String message;
+    String info;
 
-    public ChatEvent(String s, String p, String m)
+    public ServerInfoEvent(String i)
     {
-        this.sender = s;
-        this.status = p;
-        this.message = m;
+        this.info = i;
     }
 
-    public void handle(GameClient client)
+    public void handle(CWindow win)
     {
-        System.out.println(client.getPlayerName() + " received from " + sender + " " + status + ": " + message);
-        client.toCW(new event.cw.ChatEvent(sender, status, message));
+        win.updateServerInfo(this.info);
     }
 
 }

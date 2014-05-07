@@ -29,14 +29,19 @@ import java.awt.Color;
 import java.util.ArrayList;
 import javax.swing.JFrame;
 import javax.swing.JOptionPane;
+import javax.swing.JTextArea;
 import java.awt.BorderLayout;
 import java.awt.Dimension;
 
 public class ClientWindow extends JFrame
 {
 
-    //CWindow cwin;
-    //DemoPanel demoPanel;
+    CWindow otherWin;
+    DemoPanel demoPanel;
+    ButtonPanel buttons;
+    JTextArea serverInfo;
+    JTextArea chat;
+    MessagePanel messages;
 
 
     public ClientWindow(int port)
@@ -48,15 +53,27 @@ public class ClientWindow extends JFrame
         this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         this.setSize(1000,700);
         this.setLayout(new BorderLayout());
-        DemoPanel demoPanel = new DemoPanel();
-        demoPanel.setPreferredSize(new Dimension(700,700));
+        this.demoPanel = new DemoPanel();
+        this.demoPanel.setPreferredSize(new Dimension(400,400));
         GameClient c1 = new GameClient(playerName, port);
         RealWindow win = new RealWindow(c1, demoPanel);
-        CWindow otherWin = new CWindow(c1, this);
-        this.add(demoPanel, BorderLayout.CENTER);
-        ButtonPanel buttons = new ButtonPanel(this, otherWin);
-        this.add(buttons, BorderLayout.PAGE_END);
+        this.otherWin = new CWindow(c1, this);
+        this.buttons = new ButtonPanel(this, otherWin);
+        this.messages = new MessagePanel(this, otherWin);
+        this.add(this.demoPanel, BorderLayout.CENTER);
+        this.add(this.messages, BorderLayout.PAGE_END);
+        this.add(this.buttons, BorderLayout.PAGE_START);
         this.setVisible(true);
+    }
+
+    public void updateServerInfo(String info)
+    {
+        this.messages.updateServerInfo(info);
+    }
+
+    public void newChatMessage(String sender, String status, String message)
+    {
+        this.messages.newChatMessage("[" + sender + "][" + status + "] " + message);
     }
 
     private String askHumanForName()
@@ -67,7 +84,7 @@ public class ClientWindow extends JFrame
                             JOptionPane.PLAIN_MESSAGE,
                             null,
                             possibilities,
-                            "typety type");
+                            null);
         if ((s != null) && (s.length() > 0))
         {
             return s;

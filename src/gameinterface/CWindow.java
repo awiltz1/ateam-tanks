@@ -31,9 +31,10 @@ public class CWindow extends ConcreteDropBox<CWindow>
     DropBox<GameClient> client;
     ClientWindow win;
 
-    public CWindow(DropBox<GameClient> c, ClientWindow win)
+    public CWindow(GameClient c, ClientWindow win)
     {
         this.client = c;
+        c.setCWin(this);
         this.win = win;
         this.start();
     }
@@ -46,6 +47,16 @@ public class CWindow extends ConcreteDropBox<CWindow>
     public ClientWindow getWin()
     {
         return this.win;
+    }
+
+    public void updateServerInfo(String info)
+    {
+        this.win.updateServerInfo(info);
+    }
+
+    public void newChatMessage(String sender, String status, String message)
+    {
+        this.win.newChatMessage(sender, status, message);
     }
 
 }

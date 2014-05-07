@@ -31,6 +31,7 @@ import java.util.ArrayList;
 import javax.swing.*;
 import java.awt.BorderLayout;
 import java.awt.FlowLayout;
+import java.awt.GridLayout;
 import java.awt.Dimension;
 import java.awt.event.*;
 
@@ -46,15 +47,16 @@ public class ButtonPanel extends JPanel
     private JButton join;
     private JButton disconnect;
     private JButton start;
+    private JButton part;
 
     public ButtonPanel(final JFrame frame, final CWindow win)
     {
         this.frame = frame;
-        this.setLayout(new FlowLayout());
+        this.setLayout(new GridLayout(0, 4));
         this.win = win;
 
         this.connect = new JButton("Connect");
-        this.connect.setPreferredSize(new Dimension(128, 40));
+        this.connect.setPreferredSize(new Dimension(120, 25));
         this.add(this.connect);
         this.connect.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
@@ -64,7 +66,7 @@ public class ButtonPanel extends JPanel
         } );
 
         this.disconnect = new JButton("Disconnect");
-        this.disconnect.setPreferredSize(new Dimension(128, 40));
+        this.disconnect.setPreferredSize(new Dimension(120, 25));
         this.add(this.disconnect);
         this.disconnect.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
@@ -73,7 +75,7 @@ public class ButtonPanel extends JPanel
         } );
 
         this.quit = new JButton("Quit");
-        this.quit.setPreferredSize(new Dimension(128, 40));
+        this.quit.setPreferredSize(new Dimension(120, 25));
         this.add(this.quit);
         this.quit.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
@@ -82,7 +84,7 @@ public class ButtonPanel extends JPanel
         } );
 
         this.create = new JButton("Create Game");
-        this.create.setPreferredSize(new Dimension(128, 40));
+        this.create.setPreferredSize(new Dimension(120, 25));
         this.add(this.create);
         this.create.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
@@ -92,7 +94,7 @@ public class ButtonPanel extends JPanel
         } );
         
         this.join = new JButton("Join Game");
-        this.join.setPreferredSize(new Dimension(128, 40));
+        this.join.setPreferredSize(new Dimension(120, 25));
         this.add(this.join);
         this.join.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
@@ -100,9 +102,18 @@ public class ButtonPanel extends JPanel
                 win.toClient(new event.client.FwdUserEvent(new event.user.JoinRoomEvent(gamename)));
             }
         } );
+        
+        this.part = new JButton("Part Game");
+        this.part.setPreferredSize(new Dimension(120, 25));
+        this.add(this.part);
+        this.part.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent e) {
+                win.toClient(new event.client.FwdUserEvent(new event.user.PartRoomEvent("user quit")));
+            }
+        } );
 
         this.start = new JButton("Start Game");
-        this.start.setPreferredSize(new Dimension(128, 40));
+        this.start.setPreferredSize(new Dimension(120, 25));
         this.add(this.start);
         this.start.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {

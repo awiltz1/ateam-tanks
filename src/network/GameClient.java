@@ -30,6 +30,7 @@ public class GameClient extends ConcreteDropBox<GameClient>
     private String name;
     private DropBox<User> outBox;
     private DropBox<GWindow> gameWindow;
+    private DropBox<CWindow> cWindow;
     private int port;
     private boolean connected;
 
@@ -38,6 +39,7 @@ public class GameClient extends ConcreteDropBox<GameClient>
         this.connected = false;
         this.name = name;
         this.port = port;
+        this.cWindow = null;
         this.outBox = new FakeBox<User>();
         this.gameWindow = new FakeWindow(this);
         this.start();
@@ -49,6 +51,14 @@ public class GameClient extends ConcreteDropBox<GameClient>
         this.gameWindow = win;
     }
 
+    public void setCWin(DropBox<CWindow> cwin)
+    {
+        if(this.cWindow == null)
+        {
+            this.cWindow = cwin;
+        }
+    }
+
     public void toUser(Event<User> ev)
     {
         this.outBox.push(ev);
@@ -57,6 +67,14 @@ public class GameClient extends ConcreteDropBox<GameClient>
     public void toGW(Event<GWindow> ev)
     {
         this.gameWindow.push(ev);
+    }
+
+    public void toCW(Event<CWindow> ev)
+    {
+        if(this.cWindow != null)
+        {
+            this.cWindow.push(ev);
+        }
     }
 
     public String getPlayerName()

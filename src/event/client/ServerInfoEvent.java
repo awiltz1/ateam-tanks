@@ -23,24 +23,19 @@ import network.*;
 import game.*;
 import gameinterface.*;
 
-public class ChatEvent implements event.Event<GameClient>
+public class ServerInfoEvent implements event.Event<GameClient>
 {
 
-    String sender;
-    String status;
-    String message;
+    String info;
 
-    public ChatEvent(String s, String p, String m)
+    public ServerInfoEvent(String i)
     {
-        this.sender = s;
-        this.status = p;
-        this.message = m;
+        this.info = i;
     }
 
     public void handle(GameClient client)
     {
-        System.out.println(client.getPlayerName() + " received from " + sender + " " + status + ": " + message);
-        client.toCW(new event.cw.ChatEvent(sender, status, message));
+        client.toCW(new event.cw.ServerInfoEvent(this.info));
     }
 
 }

@@ -17,13 +17,13 @@
  *    along with ateam-tanks.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package event.client;
+package event.cw;
 
 import network.*;
 import game.*;
 import gameinterface.*;
 
-public class ChatEvent implements event.Event<GameClient>
+public class ChatEvent implements event.Event<CWindow>
 {
 
     String sender;
@@ -37,10 +37,9 @@ public class ChatEvent implements event.Event<GameClient>
         this.message = m;
     }
 
-    public void handle(GameClient client)
+    public void handle(CWindow win)
     {
-        System.out.println(client.getPlayerName() + " received from " + sender + " " + status + ": " + message);
-        client.toCW(new event.cw.ChatEvent(sender, status, message));
+        win.newChatMessage(this.sender, this.status, this.message);
     }
 
 }

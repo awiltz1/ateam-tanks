@@ -42,54 +42,82 @@ public class AICore extends OldPlayer
 	}
 	// Gives orders to tank
 	public ArrayList<OrderQueue> giveOrders(int frameLimit) {
-		this.orders = new OrderQueue();
-		this.frames = frameLimit;
 		
+		this.orders = new OrderQueue(frameLimit, this.ownedTanks.get(0).uid());
+		this.frames = frameLimit;
+
 		Vector3D orig = this.ownedTanks.get(0).getPosition();
-                System.out.println(orig.toString());
+		Obstacle obst= this.checkIfCol(orig);
 		Vector3D opp = this.opponent.getPosition();
-                System.out.println(opp.toString());
-		Obstacle o = this.pathClear(orig, opp, 1);
-		Vector3D newPos = null;
-		Vector3D shootAt = null;
-		// If nothing is in the way shoot 
-		if (o == null) {
-			this.shoot(orig, opp);
+		if (obst != null) {
+			System.out.println("Collision");
+			double angle = this.getAngle(obst.getPosition(), orig);
+			Vector3D vec = new Vector3D(new Vector3D(18, new Direction(angle)), orig);
+			this.move(orig, vec);
+			this.shoot(vec, opp);
 		}
-		// Else find position to move to
 		else {
-			o = this.pathClear(orig, opp, 0);
-			Vector3D ov = o.getPosition();
-			double d1 = this.getDist(orig, ov);
-			double d2 = this.getDist(opp, ov);
-			// If opponent is farther from obstacle than AI find position to attack
-			if (d2 > d1-40) {
-				System.out.println("getPos");
-				newPos = this.getPos(orig, opp, o);
-				shootAt= opp;
-				
+			Obstacle o = this.pathClear(orig, opp);
+			Vector3D newPos = null;
+			Vector3D shootAt = null;
+			// If nothing is in the way shoot 
+			if (o == null) {
+				this.shoot(orig, opp);
 			}
-			// Else find position to defend
+			// Else find position to move to
 			else {
-				System.out.println("getPos2");
-				newPos = this.getPos2(orig, opp, o);
-				shootAt = this.getPos(opp, orig, o);
-				
+				Vector3D ov = o.getPosition();
+				double d1 = this.getDist(orig, ov);
+				double d2 = this.getDist(opp, ov);
+				// If opponent is farther from obstacle than AI find position to attack
+				if (d2 > d1-30) {
+					newPos = this.getPos(orig, opp, o);
+					shootAt = opp;
+				}
+				// Else find position to defend
+				else {
+					newPos = this.getPos2(orig, opp, o);
+					shootAt = this.getPos(opp, orig, o);
+				}
+				// Get orders to move to new position
+				this.move(orig, newPos);
+
 			}
-			// Get orders to move to new position
-			this.move(orig, newPos);
-			
+			// Once done moving attack with remaining frames
+			if (this.frames >= 9) {
+				this.shoot(newPos, opp);
+			}
+			// return orders
 		}
-		// Once done moving attack with remaining frames
-		if (this.frames >= 3) {
-			this.shoot(newPos, shootAt);
-		}
-		// Give tanks orders
-                ArrayList<OrderQueue> output = new ArrayList<OrderQueue>();
-                output.add(this.orders.clone());
+        ArrayList<OrderQueue> output = new ArrayList<OrderQueue>();
+		output.add(this.orders.clone());
 		return output;
 	}
 	
+	public Obstacle checkIfCol(Vector3D v) {
+		double cObst = 10000;
+		Obstacle o = null;
+		for (Obstacle temp : this.objects) {
+			double dist = this.getDist(v, temp.getPosition() );
+			if (dist < cObst) {
+				cObst = dist;
+				o = temp;
+			}
+		}
+		if (o != null) {
+			double angle = getAngle(v, o.getPosition());
+			Vector3D v2 = new Vector3D(v, new Vector3D ( 10, new Direction(angle)));
+			Obstacle o2 = this.isLegit(v2);
+			if (o2 != null) {
+				return o2;
+			}
+			else {
+				return null;
+			}
+		}
+		return null;
+	}
+
 	// Spray shoot at opponent
 	public void shoot(Vector3D v1, Vector3D v2) {
 		double angle = this.getAngle(v1, v2);
@@ -121,7 +149,7 @@ public class AICore extends OldPlayer
 			double speed = this.ownedTanks.get(0).getSpeed();
 			double dist = this.getDist(v1, v2);
 			double fr2 =  dist/speed;
-					
+
 			int fr = (int) fr2;
 			if (this.frames <  fr) {
 				fr = this.frames;
@@ -135,7 +163,7 @@ public class AICore extends OldPlayer
 		}
 	}
 	// Find if an obstacle is in the way
-	public Obstacle pathClear(Vector3D v1, Vector3D v2, int x) {
+	public Obstacle pathClear(Vector3D v1, Vector3D v2) {
 		double speed = this.ownedTanks.get(0).getSpeed();
 		// Get number of frames to reach v2 from v1
 		int frames = this.moveFrames(v1, v2, speed);
@@ -143,13 +171,7 @@ public class AICore extends OldPlayer
 		while (frames > 0) {
 			double angle = this.getAngle(v1, v2);
 			v1 = new Vector3D(v1, new Vector3D ( speed, new Direction(angle)));
-			//Check colllision
-			if (x == 1) {
-				o = this.isLegit2(v1);
-			}
-			else {
-				o = this.isLegit(v1);
-			}
+			o = this.isLegit(v1);
 			if (o == null) {
 				frames -= 1;
 			}
@@ -205,6 +227,7 @@ public class AICore extends OldPlayer
 	}
 	// Get attack position to move
 	public Vector3D getPos(Vector3D v1, Vector3D v2, Obstacle o) {
+		long startTime = System.nanoTime();
 		// Get diff between angles from object
 		double angle1 = this.getAngle(v1, o.getPosition());
 		double angle2 = this.getAngle(v2, o.getPosition());
@@ -238,6 +261,13 @@ public class AICore extends OldPlayer
 		Vector3D temp = null;
 		// find position that is clear of obstacles
 		while (b == false) {
+			long endTime = System.nanoTime();
+			long duration = endTime - startTime;
+			double sec = (double) duration / 1000000000.0;
+			System.out.println("time = " + sec);
+			if (sec > 2.5) {
+				b = true;
+			}
 			// Get new position
 			System.out.println("i = " + i);
 			temp = new Vector3D(new Vector3D(i*8+30, new Direction(newAngle)), o.getPosition());
@@ -248,7 +278,7 @@ public class AICore extends OldPlayer
 			}
 			else {
 				// Check if path is clear from tank to newPos
-				o = this.pathClear(temp, v1, 0);
+				o = this.pathClear(temp, v1);
 				// If no obstacle in way b == true
 				if (o != null) {
 					i += 1;
@@ -262,20 +292,27 @@ public class AICore extends OldPlayer
 	}
 	// Get defense position to move
 	public Vector3D getPos2(Vector3D v1, Vector3D v2, Obstacle o) {
+		long startTime = System.nanoTime();
 		Vector3D opp = this.getPos(v2, v1, o);
 		double angle = this.getAngle(o.getPosition(), v1);
 		boolean b = false;
 		int i = 2;
 		Vector3D temp = null;
 		while (b == false) {
+			long endTime = System.nanoTime();
+			long duration = endTime - startTime;
+			double sec = (double) duration / 1000000000.0;
+			if (sec > 2.5) {
+				b = true;
+			}
 			System.out.println("i = " + i);
 			System.out.println("2");
 			// Get new position
 			temp = new Vector3D(new Vector3D(i*10, new Direction(angle)), o.getPosition());
 			System.out.println("(" + temp.getX() + ", " + temp.getY() + ", " + temp.getZ() + ")");
 			// Check if path is clear from tank to newPos
-			
-			Obstacle o2 = this.pathClear(temp, opp, 0);
+					
+			Obstacle o2 = this.pathClear(temp, opp);
 			// If no obstacle in way b == true
 			if (o2 == null) {
 				b = true;
@@ -299,23 +336,6 @@ public class AICore extends OldPlayer
 		plTank.setPosition(oldPos);
 		return null;
 	}
-	
-	// Check if bullet will collide with an obstacle
-	public Obstacle isLegit2(Vector3D v) {
-		//SimpleBullet sb = new SimpleBullet(v, new Direction(0));
-		SimpleBullet sb = new SimpleBullet(v, new Direction(0));
-		
-		for (Obstacle o : this.objects) {
-			boolean b = sb.checkCollision(o);
-			if (b == true) {
-				//sb.kill();
-				return o;
-			}
-		}
-		//sb.kill();
-		return null;
-	}
-	
 	// Distance between two Vector3Ds
 	public double getDist(Vector3D v1, Vector3D v2) {
 		double deltaX = v2.getX() - v1.getX();
@@ -345,6 +365,3 @@ public class AICore extends OldPlayer
 		System.out.println("Pos = (" + v.getX() + "," + v.getY() + ")");
 	}
 }
-	
-	
-	

@@ -60,6 +60,11 @@ public class Room extends ConcreteDropBox<Room>
         return false;
     }
 
+    public boolean isGameFull()
+    {
+        return false;
+    }
+
     public boolean isGameRunning()
     {
         return false;

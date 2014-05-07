@@ -35,7 +35,7 @@ public class PartRoomEvent implements event.Event<User>
 
     public void handle(User user)
     {
-        user.toClient(new event.client.ChatEvent("Game", "private", "You have left the game: " + this.reason));
+        user.toClient(new event.client.ChatEvent("Game", "private", "You have left a game: " + this.reason));
         user.toRoom(new event.room.PartEvent(user.getPlayerName(), this.reason));
         user.resetRoom();
     }

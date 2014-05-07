@@ -129,6 +129,15 @@ public class GameRoom extends Room
         return name.equals(this.creator);
     }
 
+    public boolean isGameFull()
+    {
+        if(this.users.size() >= this.maxPlayers)
+        {
+            return true;
+        }
+        return false;
+    }
+
     public boolean isGameRunning()
     {
         return this.isGameRunning;
@@ -155,6 +164,7 @@ public class GameRoom extends Room
         }
         this.isGameRunning = true;
         System.out.println(this.name + ": Game has started");
+        toServer(new event.server.InfoUpdateEvent());
     }
 
     public void stepGame()
